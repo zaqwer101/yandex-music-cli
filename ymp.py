@@ -68,7 +68,7 @@ def handler():
                 if PLAYER_PID != 0:
                     os.kill(PLAYER_PID, signal.SIGTERM)
                 # if this track is already first, play it
-                if current_track != 0:
+                if current_track > 1:
                     current_track -= 2
                 else:
                     current_track = 0
