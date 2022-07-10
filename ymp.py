@@ -34,7 +34,7 @@ def tracks_load():
     return tracks
 
 
-CURRENT_STATE = State.NONE    
+CURRENT_STATE = State.PAUSED    
 TRACKS = tracks_load()  # tracks list
 PLAYER_PID = 0          # PID of player with current track
 
@@ -59,9 +59,6 @@ def handler():
     current_track = 0
     while current_track < len(TRACKS):
         while(True):
-            if CURRENT_STATE == State.NONE: # no state at the moment
-                break
-
             if CURRENT_STATE == State.NEXT_TRACK:
                 if PLAYER_PID != 0:
                     os.kill(PLAYER_PID, signal.SIGKILL)
@@ -78,11 +75,14 @@ def handler():
                 break
 
             elif CURRENT_STATE == State.PLAY_PAUSE:
-                s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-                s.connect(PLAYER_SOCKET)
-                s.send(b'{"command": ["cycle", "pause"]}\n')
-                s.close()
-                CURRENT_STATE = State.PAUSED
+                if PLAYER_PID != 0:
+                    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                    s.connect(PLAYER_SOCKET)
+                    s.send(b'{"command": ["cycle", "pause"]}\n')
+                    s.close()
+                    CURRENT_STATE = State.PAUSED
+                else:
+                    CURRENT_STATE = State.NONE
 
             elif CURRENT_STATE == State.PAUSED:
                 continue
@@ -91,6 +91,10 @@ def handler():
                 if PLAYER_PID != 0:
                     os.kill(PLAYER_PID, signal.SIGKILL)
                 exit(0)
+
+            if CURRENT_STATE == State.NONE: # no state at the moment
+                break
+
 
             time.sleep(0.5)
 
