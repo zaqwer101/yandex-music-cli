@@ -11,6 +11,9 @@ import signal
 import socket
 
 
+os.mkdir("music")
+
+
 class State(Enum):
     NONE        = 0
     PLAYING     = 1
