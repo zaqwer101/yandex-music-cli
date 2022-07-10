@@ -11,7 +11,8 @@ import signal
 import socket
 
 
-os.mkdir("music")
+if not os.path.exists(CACHE_DIR):
+    os.makedirs(CACHE_DIR)
 
 
 class State(Enum):
